@@ -1,0 +1,134 @@
+<main class="page">
+  <p-card header="Euro-Stückelung">
+    <section class="controls">
+      <div class="field">
+        <label for="amount-input">Betrag in EUR</label>
+        <p-inputNumber
+          inputId="amount-input"
+          [min]="0.01"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          [ngModel]="amount"
+          (ngModelChange)="amount = $event"
+          data-testid="amount-input"
+        ></p-inputNumber>
+      </div>
+
+      <div class="field">
+        <label>Berechnungsmodus</label>
+        <p-selectButton
+          [options]="modeOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="mode"
+          (ngModelChange)="onModeChange($event)"
+          [disabled]="loading"
+          data-testid="mode-toggle"
+        ></p-selectButton>
+      </div>
+
+      <div class="actions">
+        <button
+          pButton
+          type="button"
+          label="Berechnen"
+          (click)="calculate()"
+          [disabled]="loading || !isAmountValid()"
+          data-testid="calculate-button"
+        ></button>
+      </div>
+    </section>
+
+    <section class="messages">
+      <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage"></p-message>
+      <p-message *ngIf="infoMessage" severity="info" [text]="infoMessage"></p-message>
+    </section>
+  </p-card>
+
+  <p-card *ngIf="hasResult()" header="Aktuelle Stückelung">
+    <p-table [value]="currentResult?.breakdown ?? []" data-testid="breakdown-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Schein/Münze</th>
+          <th>Anzahl</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.denomination }}</td>
+          <td>{{ row.count }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <p-card *ngIf="hasResult() && (currentResult?.difference?.length ?? 0) > 0" header="Differenz zur vorherigen Berechnung">
+    <p-table [value]="currentResult?.difference ?? []" data-testid="difference-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Schein/Münze</th>
+          <th>Delta</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr>
+          <td>{{ row.denomination }}</td>
+          <td>{{ row.delta }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <p-card *ngIf="hasResult()" header="Manuelle Stückelung">
+    <p class="remaining" data-testid="remaining-amount">
+      Noch zu stückelnder Betrag: {{ getRemainingAmountText() }}
+    </p>
+
+    <p-table [value]="denominations">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Schein/Münze</th>
+          <th>Anzahl</th>
+          <th>Slider</th>
+          <th>Zusätzlich möglich</th>
+          <th>Maximalwert</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-denomination>
+        <tr [attr.data-testid]="'slider-row-' + toTestId(denomination)">
+          <td>{{ denomination }}</td>
+          <td>
+            <span [attr.data-testid]="'count-' + toTestId(denomination)">{{ getManualCount(denomination) }}</span>
+          </td>
+          <td class="slider-cell">
+            <p-slider
+              [ngModel]="getManualCount(denomination)"
+              (ngModelChange)="onSliderChange(denomination, $event)"
+              [min]="0"
+              [max]="getSliderMax(denomination)"
+              [step]="1"
+              [attr.data-testid]="'slider-' + toTestId(denomination)"
+            ></p-slider>
+          </td>
+          <td>
+            <span [attr.data-testid]="'additional-' + toTestId(denomination)">
+              {{ getAdditionalPossibleCount(denomination) }}
+            </span>
+          </td>
+          <td>{{ getSliderMax(denomination) }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="actions">
+      <button
+        pButton
+        type="button"
+        label="Stückelung übernehmen"
+        (click)="applyManualBreakdown()"
+        [disabled]="loading || !canApplyManualBreakdown()"
+        data-testid="apply-manual-button"
+      ></button>
+    </div>
+  </p-card>
+</main>
