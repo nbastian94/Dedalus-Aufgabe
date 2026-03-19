@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Calculates per-denomination deltas between a previous and current breakdown.
+ */
 @Service
 public class DifferenceService {
 

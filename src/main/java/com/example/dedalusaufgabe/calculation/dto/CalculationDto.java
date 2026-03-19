@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
 
+/**
+ * Transfer object representing a persisted calculation with amount and denomination counts.
+ */
 public record CalculationDto(
         @NotBlank(message = "amount is required")
         @Pattern(

@@ -38,6 +38,7 @@ interface ModeOption {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  // Fixed denomination order for calculation and table/slider rendering.
   readonly denominations: string[] = [...EURO_DENOMINATIONS];
   readonly modeOptions: ModeOption[] = [
     { label: 'Frontend', value: 'frontend' },
@@ -75,6 +76,7 @@ export class AppComponent {
     this.infoMessage = '';
 
     try {
+      // Keep both modes in sync: when leaving backend, pull the persisted state into frontend.
       if (oldMode === 'backend' && nextMode === 'frontend') {
         const storedCalculation = await this.api.getStoredCalculation();
         this.previousFrontend = storedCalculation;
@@ -85,6 +87,7 @@ export class AppComponent {
         }
       }
 
+      // When entering backend, persist the latest frontend state as backend baseline.
       if (oldMode === 'frontend' && nextMode === 'backend' && this.previousFrontend) {
         await this.api.storeCalculation(this.previousFrontend);
         this.previousBackend = this.previousFrontend;
@@ -113,6 +116,7 @@ export class AppComponent {
     try {
       const amount = this.numberToAmount(this.amount as number);
 
+      // Backend mode delegates full calculation (including difference) to the API.
       if (this.mode === 'backend') {
         const response = await this.api.calculate({ amount });
         this.currentResult = response;
@@ -121,6 +125,7 @@ export class AppComponent {
           breakdown: response.breakdown
         };
       } else {
+        // Frontend mode computes locally against the previous frontend snapshot.
         const response = this.localBreakdownService.calculate(amount, this.previousFrontend);
         this.currentResult = response;
         this.previousFrontend = {
@@ -150,6 +155,7 @@ export class AppComponent {
     try {
       const updatedCalculation = this.buildCalculationFromManualCounts();
 
+      // Manual changes become the new baseline in the active mode.
       if (this.mode === 'backend') {
         await this.api.storeCalculation(updatedCalculation);
         this.previousBackend = updatedCalculation;
@@ -236,6 +242,7 @@ export class AppComponent {
     }
 
     const amountInCents = this.localBreakdownService.amountToCents(this.currentResult.amount);
+    // Remaining = target amount - sum(current slider selection).
     const usedInCents = this.denominations
       .map((denomination) => this.localBreakdownService.amountToCents(denomination) * this.getManualCount(denomination))
       .reduce((sum, value) => sum + value, 0);
@@ -253,6 +260,7 @@ export class AppComponent {
   }
 
   private buildCalculationFromManualCounts(): CalculationDto {
+    // Persist only non-zero rows to match backend/frontend DTO expectations.
     const breakdown: DenominationCountDto[] = this.denominations
       .map((denomination) => ({
         denomination,

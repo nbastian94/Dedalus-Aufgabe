@@ -1,8 +1,16 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function enterAmount(page: Page, value: string): Promise<void> {
+  const input = page.locator('#amount-input');
+  await input.fill(value);
+  // PrimeNG InputNumber commits ngModel on blur/commit interaction.
+  await input.press('Tab');
+  await expect(page.getByTestId('calculate-button')).toBeEnabled();
+}
 
 test('berechnet Stueckelung im Frontend-Modus', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#amount-input').fill('150.00');
+  await enterAmount(page, '150.00');
   await page.getByTestId('calculate-button').click();
 
   await expect(page.getByTestId('breakdown-table')).toContainText('100.00');
@@ -11,7 +19,7 @@ test('berechnet Stueckelung im Frontend-Modus', async ({ page }) => {
 
 test('Slider passen Restbetrag und zusaetzliche Moeglichkeiten dynamisch an', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#amount-input').fill('150.00');
+  await enterAmount(page, '150.00');
   await page.getByTestId('calculate-button').click();
 
   const slider100Handle = page.getByTestId('slider-100-00').locator('.p-slider-handle');
@@ -47,7 +55,7 @@ test('Moduswechsel synchronisiert Frontend nach Backend via POST /calculations',
   });
 
   await page.goto('/');
-  await page.locator('#amount-input').fill('150.00');
+  await enterAmount(page, '150.00');
   await page.getByTestId('calculate-button').click();
   await page.getByRole('button', { name: 'Backend' }).click();
 
@@ -93,7 +101,7 @@ test('Moduswechsel synchronisiert Backend nach Frontend via GET /calculations', 
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Backend' }).click();
-  await page.locator('#amount-input').fill('150.00');
+  await enterAmount(page, '150.00');
   await page.getByTestId('calculate-button').click();
   await page.getByRole('button', { name: 'Frontend' }).click();
 

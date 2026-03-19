@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Computes a greedy denomination breakdown for a given amount in cents.
+ */
 @Service
 public class BreakdownService {
 

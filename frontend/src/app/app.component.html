@@ -1,5 +1,6 @@
 <main class="page">
   <p-card header="Euro-Stückelung">
+    <!-- Entry point for amount, mode selection, and trigger action. -->
     <section class="controls">
       <div class="field">
         <label for="amount-input">Betrag in EUR</label>
@@ -39,6 +40,7 @@
       </div>
     </section>
 
+    <!-- Inline feedback for validation and backend/frontend sync messages. -->
     <section class="messages">
       <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage"></p-message>
       <p-message *ngIf="infoMessage" severity="info" [text]="infoMessage"></p-message>
@@ -46,6 +48,7 @@
   </p-card>
 
   <p-card *ngIf="hasResult()" header="Aktuelle Stückelung">
+    <!-- Displays the most recent calculated denomination breakdown. -->
     <p-table [value]="currentResult?.breakdown ?? []" data-testid="breakdown-table">
       <ng-template pTemplate="header">
         <tr>
@@ -63,6 +66,7 @@
   </p-card>
 
   <p-card *ngIf="hasResult() && (currentResult?.difference?.length ?? 0) > 0" header="Differenz zur vorherigen Berechnung">
+    <!-- Shown only when a previous calculation exists and a non-empty delta is returned. -->
     <p-table [value]="currentResult?.difference ?? []" data-testid="difference-table">
       <ng-template pTemplate="header">
         <tr>
@@ -80,6 +84,7 @@
   </p-card>
 
   <p-card *ngIf="hasResult()" header="Manuelle Stückelung">
+    <!-- Manual adjustment section: sliders override piece counts before applying. -->
     <p class="remaining" data-testid="remaining-amount">
       Noch zu stückelnder Betrag: {{ getRemainingAmountText() }}
     </p>
@@ -101,6 +106,7 @@
             <span [attr.data-testid]="'count-' + toTestId(denomination)">{{ getManualCount(denomination) }}</span>
           </td>
           <td class="slider-cell">
+            <!-- Slider max is computed dynamically from current usage and remaining amount. -->
             <p-slider
               [ngModel]="getManualCount(denomination)"
               (ngModelChange)="onSliderChange(denomination, $event)"

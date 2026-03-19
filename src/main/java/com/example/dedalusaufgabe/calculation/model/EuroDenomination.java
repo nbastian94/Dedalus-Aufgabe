@@ -5,6 +5,9 @@ import com.example.dedalusaufgabe.calculation.exception.InvalidCalculationExcept
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Supported euro denominations with integer cent values and display strings.
+ */
 public enum EuroDenomination {
     TWO_HUNDRED(20_000, "200.00"),
     ONE_HUNDRED(10_000, "100.00"),

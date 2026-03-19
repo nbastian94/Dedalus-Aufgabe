@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Exposes REST endpoints for calculating, retrieving, and storing euro denomination breakdowns.
+ */
 @RestController
 public class CalculationController {
 

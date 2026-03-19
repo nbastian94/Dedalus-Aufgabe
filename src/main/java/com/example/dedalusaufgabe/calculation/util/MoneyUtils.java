@@ -5,6 +5,9 @@ import com.example.dedalusaufgabe.calculation.exception.InvalidCalculationExcept
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+/**
+ * Utility methods for converting and validating monetary values between string and cents.
+ */
 public final class MoneyUtils {
 
     private MoneyUtils() {

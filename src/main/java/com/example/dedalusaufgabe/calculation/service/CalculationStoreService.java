@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Stores the most recent calculation in-memory for difference computation.
+ */
 @Service
 public class CalculationStoreService {
 

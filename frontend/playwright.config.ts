@@ -6,7 +6,7 @@ export default defineConfig({
   retries: 0,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4200',
+    baseURL: 'http://127.0.0.1:4300',
     trace: 'on-first-retry'
   },
   projects: [
@@ -16,9 +16,10 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: 'npm start',
+    command: 'npm run start -- --host 127.0.0.1 --port 4300',
     cwd: '.',
-    url: 'http://127.0.0.1:4200',
-    reuseExistingServer: !process.env.CI
+    url: 'http://127.0.0.1:4300',
+    timeout: 120 * 1000,
+    reuseExistingServer: !process.env['CI']
   }
 });

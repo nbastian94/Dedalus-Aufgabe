@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Orchestrates calculation use cases, persistence of last result, and DTO mapping.
+ */
 @Service
 public class CalculationApplicationService {
 

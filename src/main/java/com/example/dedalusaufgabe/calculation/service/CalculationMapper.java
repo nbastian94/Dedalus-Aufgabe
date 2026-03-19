@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Converts between API DTOs and internal calculation models with validation checks.
+ */
 @Component
 public class CalculationMapper {
 
